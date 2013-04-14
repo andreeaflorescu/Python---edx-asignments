@@ -55,21 +55,6 @@ class NewsStory():
         self.summary = summary
         self.link = link
 
-    def get_guid(self):
-        return self.guid
-
-    def get_title(self):
-        return self.title
-
-    def get_subject(self):
-        return self.subject
-    
-    def get_summary(self):
-        return self.summary
-
-    def get_link(self):
-        return self.link
-
     def getGuid(self):
         return self.guid
 
@@ -101,6 +86,7 @@ class Trigger(object):
 # Whole Word Triggers
 # Problems 2-5
 
+
 class WordTrigger(Trigger):
     def __init__(self, word):
         self.word = word.lower()
@@ -121,17 +107,17 @@ class WordTrigger(Trigger):
 # TODO: TitleTrigger
 class TitleTrigger(WordTrigger):
     def evaluate(self, story):
-        return WordTrigger.isWordIn(self,story.get_title())
+        return WordTrigger.isWordIn(self,story.getTitle())
 
 # TODO: SubjectTrigger
 class SubjectTrigger(WordTrigger):
     def evaluate(self, story):
-        return WordTrigger.isWordIn(self,story.get_subject())
+        return WordTrigger.isWordIn(self,story.getSubject())
 
 # TODO: SummaryTrigger
 class SummaryTrigger(WordTrigger):
     def evaluate(self, story):
-        return WordTrigger.isWordIn(self,story.get_summary())
+        return WordTrigger.isWordIn(self,story.getSummary())
 
 
 # Composite Triggers
@@ -218,11 +204,13 @@ def makeTrigger(triggerMap, triggerType, params, name):
     if triggerType == 'SUMMARY':
         triggerMap[name] = SummaryTrigger(params[0])
     if triggerType == 'OR':
-        triggerMap[name] = OrTrigger(WordTrigger(params[0]), WordTrigger(params[1]))
+        triggerMap[name] = OrTrigger(triggerMap[params[0]], triggerMap[params[1]])
     if triggerType == 'AND':
-        triggerMap[name] = AndTrigger(WordTrigger(params[0]), WordTrigger(params[1]))
+        triggerMap[name] = AndTrigger(triggerMap[params[0]], triggerMap[params[1]])
+    if triggerType == 'NOT':
+        triggerMap[name] = NotTrigger(triggerMap[params[0]])
     if triggerType == 'PHRASE':
-        triggerMap[name] = PhraseTrigger(params[0])
+        triggerMap[name] = PhraseTrigger(' '.join (str(p) for p in params) )
     return triggerMap[name]
 
 def readTriggerConfig(filename):
